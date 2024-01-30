@@ -1,0 +1,9 @@
+﻿<td colspan="@ColSpan" class="text-lg-center p-0">
+    <div class="progress rounded-0" style="height: 32px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+    </div>
+</td>
+
+@code {
+    [Parameter] public int ColSpan { get; set; } = 1;
+}

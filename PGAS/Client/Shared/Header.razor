@@ -1,0 +1,22 @@
+﻿@inject IJSRuntime JS
+
+<nav class="app-header navbar navbar-expand-lg align-items-center">
+    <button type="button" id="sidebarCollapse" class="btn default">
+        <i class="fa-light fa-bars"></i>
+    </button>
+    <a href="" class="d-flex align-items-center text-dark text-decoration-none">
+        <img src="favicon.png" height="23" class="me-1" />
+        <h4 class="text-center app-name mb-0 fw-bolder">PGAS</h4>
+    </a>
+    <div class="auth-corner">
+        <button type="button" class="btn btn-outline-primary border-0"><i class="fa-solid fa-right-to-bracket"></i></button>
+    </div>
+</nav>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+            await JS.InvokeVoidAsync("initSideBarToggle");
+    }
+}

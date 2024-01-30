@@ -1,0 +1,169 @@
+﻿@typeparam TElement
+
+<div class="row">
+    <div class="col-12">
+        <div class="card overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table id="tbl-users" class="table table-hover align-middle mb-0 overflow-hidden">
+                        <thead class="table-light">
+                            @STTHeadTemplate
+                        </thead>
+                        @if (_itemsInPage != null)
+                        {
+                            <tbody>
+                                @{
+                                    if (_itemsInPage.Count > 0)
+                                    {
+                                        var index = _startRowIndex;
+                                        foreach (var item in _itemsInPage)
+                                        {
+                                            index++;
+                                            <tr>
+                                                @if (ShowNumbering)
+                                                {
+                                                    <td>@(NumberingFormat.Replace("{N}", index.ToString()))</td>
+                                                }
+                                                @STRowTemplate(item)
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (STNoRecordFoundTemplate is null)
+                                        {
+                                            <tr>
+                                                <td colspan="@(ColumnCount + (ShowNumbering? 1 : 0))" class="text-lg-center">No record found!</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="@(ColumnCount + (ShowNumbering? 1 : 0))">
+                                                    @STNoRecordFoundTemplate
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        }
+                        else
+                        {
+                            <tbody>
+                                <tr>
+                                    @if (STLoadingTemplate is null)
+                                    {
+                                        <TableLoading ColSpan="(ColumnCount + (ShowNumbering? 1 : 0))" />
+                                    }
+                                    else
+                                    {
+                                        <td colspan="@(ColumnCount + (ShowNumbering? 1 : 0))">
+                                            @STLoadingTemplate
+                                        </td>
+                                    }
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            </div>
+            @if (PaginationIncludeInFooterBox)
+            {
+                <div class="card-footer">
+                    <Pagination @ref="_pageRef" TotalItems="_totalItems" ItemsPerPage="ItemsPerPage" OnClickPage="OnSelectPage" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (!PaginationIncludeInFooterBox)
+{
+    <div class="row mt-1">
+        <div class="col-12">
+            <Pagination @ref="_pageRef" TotalItems="_totalItems" ItemsPerPage="ItemsPerPage" OnClickPage="OnSelectPage" />
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Items to be rendered in the table.
+    /// </summary>
+    [Parameter] public IList<TElement>? Items { get; set; }
+    /// <summary>
+    /// Template for <thead>.
+    /// </summary>
+    [Parameter] public required RenderFragment STTHeadTemplate { get; set; }
+    /// <summary>
+    /// Template for <td> in <tbody>.
+    /// </summary>
+    [Parameter] public required RenderFragment<TElement> STRowTemplate { get; set; }
+    /// <summary>
+    /// Template if items is in null value.
+    /// </summary>
+    [Parameter] public RenderFragment? STLoadingTemplate { get; set; }
+    /// <summary>
+    /// Template if items is count 0.
+    /// </summary>
+    [Parameter] public RenderFragment? STNoRecordFoundTemplate { get; set; }
+    /// <summary>
+    /// Rendered column count.
+    /// </summary>
+    [Parameter] public int ColumnCount { get; set; } = 1;
+    /// <summary>
+    /// Items shown per page for pagination.
+    /// </summary>
+    [Parameter] public int ItemsPerPage { get; set; } = 10;
+    /// <summary>
+    /// To show numbering each row.
+    /// </summary>
+    [Parameter] public bool ShowNumbering { get; set; } = false;
+    /// <summary>
+    /// Numbering format, number value = {N}.
+    /// </summary>
+    [Parameter] public string NumberingFormat { get; set; } = "{N}";
+    [Parameter] public bool PaginationIncludeInFooterBox { get; set; } = false;
+
+    List<TElement>? _itemsInPage;
+    Pagination? _pageRef;
+    int _totalItems = 0;
+    int _selectedPage = 1;
+    int _startRowIndex = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadItemsInPage();
+    }
+
+    async Task OnSelectPage(int page)
+    {
+        _selectedPage = page;
+        await LoadItemsInPage();
+    }
+
+    async Task LoadItemsInPage()
+    {
+        if (Items is not null)
+        {
+            _totalItems = Items.Count;
+            _itemsInPage = Items.Skip(ItemsPerPage * (_selectedPage - 1)).Take(ItemsPerPage).ToList();
+            _startRowIndex = (ItemsPerPage * _selectedPage) - ItemsPerPage;
+            StateHasChanged();
+            await Task.CompletedTask;
+        }
+        else
+        {
+            _totalItems = 0;
+            _selectedPage = 1;
+            _startRowIndex = 0;
+            _itemsInPage = null;
+        }
+    }
+
+    public async Task RefreshAsync()
+    {
+        await LoadItemsInPage();
+    }
+}

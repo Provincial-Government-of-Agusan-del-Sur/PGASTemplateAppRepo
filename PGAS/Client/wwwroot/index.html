@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>PGAS</title>
+    <base href="/" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <link href="bootstrap-5.3.2-dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="css/fontawesome.pro.6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <link href="css/google-sans/content/google-sans.css" rel="stylesheet" />
+    <link href="css/google-roboto/content/roboto-swap.css" rel="stylesheet" />
+
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="PGAS.Client.styles.css" rel="stylesheet" />
+
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+</head>
+
+<body>
+    <div id="app" class="wrapper">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="bootstrap-5.3.2-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        navigator.serviceWorker.register('service-worker.js');
+
+        /*Implement auto dark mode*/
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                const newColorScheme = event.matches ? "dark" : "light";
+                document.documentElement.setAttribute("data-bs-theme", newColorScheme);
+            });
+        }
+
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute("data-bs-theme", "dark");
+        }
+        else {
+            document.documentElement.setAttribute("data-bs-theme", "light");
+        }
+        /*Implement auto dark mode*/
+
+        function locationChanged() {
+            var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            if (width <= 768) {
+                $("#sidebar").removeClass("active");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+﻿@page "/fetchdata"
+@using PGAS.Shared
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<div class="mb-4 rounded-3">
+    <div class="container-fluid py-5 px-3 bg-light rounded-3">
+        <h1 class="h3 display-5 fw-bold mb-0">Weather forecast</h1>
+        <p class="col-md-10 fs-4 mb-0">
+            This component demonstrates fetching data from the server.
+        </p>
+    </div>
+</div>
+
+<SimpleTable Items="forecasts" Context="forecast" ItemsPerPage="10" ColumnCount="4">
+    <STTHeadTemplate>
+        <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+        </tr>
+    </STTHeadTemplate>
+    <STRowTemplate>
+        <td>@forecast.Date.ToShortDateString()</td>
+        <td>@forecast.TemperatureC</td>
+        <td>@forecast.TemperatureF</td>
+        <td>@forecast.Summary</td>
+    </STRowTemplate>
+</SimpleTable>
+
+@code {
+    private List<WeatherForecast>? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<List<WeatherForecast>>("WeatherForecast");
+    }
+}
